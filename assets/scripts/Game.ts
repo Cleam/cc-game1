@@ -37,7 +37,14 @@ export default class Game extends cc.Component {
   })
   player: Player = null;
 
+  @property({
+    type: cc.Label,
+    displayName: "计分节点",
+  })
+  scoreDisplay: cc.Label = null;
+
   groundY = 0;
+  score = 0;
 
   // LIFE-CYCLE CALLBACKS:
 
@@ -47,11 +54,14 @@ export default class Game extends cc.Component {
     this.groundY = this.ground.y + this.ground.height / 2;
     // 生成一个新的星星
     this.spawnNewStar();
+
+    // 初始化计分
+    this.score = 0;
   }
 
   // start() {}
 
-  // update (dt) {}
+  // update(dt) {}
 
   spawnNewStar() {
     // 使用给定的模板在场景中生成一个新节点
@@ -82,5 +92,12 @@ export default class Game extends cc.Component {
 
     // 返回星星坐标
     return cc.v2(randX, randY);
+  }
+
+  // 得分
+  gainScore() {
+    this.score += 1;
+    // 更新scoreDisplay Label文字
+    this.scoreDisplay.string = "Score: " + this.score;
   }
 }
