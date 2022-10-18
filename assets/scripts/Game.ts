@@ -43,13 +43,21 @@ export default class Game extends cc.Component {
   })
   scoreDisplay: cc.Label = null;
 
+  currentStar = null;
+  isPlaying = false;
+  starPool = null;
   groundY = 0;
   score = 0;
+  timer = 0;
+  starDuration = 0;
 
   // LIFE-CYCLE CALLBACKS:
 
   onLoad() {
-    console.log("this.ground :>> ", this.ground);
+    // 初始化计时器
+    this.timer = 0;
+    this.starDuration = 0;
+
     // 获取地平面的y轴坐标
     this.groundY = this.ground.y + this.ground.height / 2;
     // 生成一个新的星星
@@ -61,7 +69,16 @@ export default class Game extends cc.Component {
 
   // start() {}
 
-  // update(dt) {}
+  update(dt) {
+    // 每帧更新计时器，超过限速还没有生成新的星星
+    // 就会调用游戏失败逻辑
+    if (this.timer > this.starDuration) {
+      this.gameOver();
+      return;
+    }
+
+    this.timer += dt;
+  }
 
   spawnNewStar() {
     // 使用给定的模板在场景中生成一个新节点
@@ -77,6 +94,19 @@ export default class Game extends cc.Component {
     //   newStar.getComponent("Star")
     // );
     newStar.getComponent("Star").game = this;
+
+    // 计时
+    this.startTimer();
+
+    this.currentStar = newStar;
+  }
+
+  startTimer() {
+    // 重置计时器，根据消失时间范围随机取一个值
+    this.starDuration =
+      this.minStarDuration +
+      Math.random() * (this.maxStarDuration - this.minStarDuration);
+    this.timer = 0;
   }
 
   getNewStarPosition() {
@@ -99,5 +129,14 @@ export default class Game extends cc.Component {
     this.score += 1;
     // 更新scoreDisplay Label文字
     this.scoreDisplay.string = "Score: " + this.score;
+  }
+
+  // 游戏结束
+  gameOver() {
+    // 停止Player节点的跳跃动作
+    this.player.stopMove();
+
+    // 重新加载场景 game
+    cc.director.loadScene("game");
   }
 }

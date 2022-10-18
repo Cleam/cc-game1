@@ -133,4 +133,8 @@ export default class Player extends cc.Component {
     // console.log("player centerPos :>> ", centerPos);
     return centerPos;
   }
+
+  stopMove() {
+    this.node.stopAllActions();
+  }
 }
