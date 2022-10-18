@@ -5,6 +5,8 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
+import Player from "./Player";
+
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -13,7 +15,7 @@ export default class Game extends cc.Component {
   @property({
     type: cc.Prefab,
   })
-  starPrefab = null;
+  starPrefab: cc.Prefab = null;
 
   //   星星产生后消失时间的随机范围
   @property()
@@ -26,14 +28,14 @@ export default class Game extends cc.Component {
     type: cc.Node,
     displayName: "地面节点",
   })
-  ground = null;
+  ground: cc.Node = null;
 
   //   Player节点，用于获取主角弹跳的高度，和控制主角行动的开关
   @property({
-    type: cc.Node,
+    type: Player,
     displayName: "Player节点",
   })
-  player = null;
+  player: Player = null;
 
   groundY = 0;
 
@@ -58,6 +60,13 @@ export default class Game extends cc.Component {
     this.node.addChild(newStar);
     // 为星星设置一个随机位置
     newStar.setPosition(this.getNewStarPosition());
+
+    // 在星星脚本组件上保存Game对象的引用
+    // console.log(
+    //   'newStar.getComponent("Star") :>> ',
+    //   newStar.getComponent("Star")
+    // );
+    newStar.getComponent("Star").game = this;
   }
 
   getNewStarPosition() {
@@ -68,7 +77,7 @@ export default class Game extends cc.Component {
       Math.random() * this.player.getComponent("Player").jumpHeight +
       50;
     // 根据屏幕宽度，随机得到一个星星的x坐标
-    const maxX = this.node.width / 2;
+    const maxX = this.node.width / 2 - 50;
     randX = (Math.random() - 0.5) * 2 * maxX;
 
     // 返回星星坐标
