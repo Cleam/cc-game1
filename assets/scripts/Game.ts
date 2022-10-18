@@ -43,6 +43,12 @@ export default class Game extends cc.Component {
   })
   scoreDisplay: cc.Label = null;
 
+  @property({
+    type: cc.AudioClip,
+    displayName: "得分音效",
+  })
+  scoreAudio = null;
+
   currentStar = null;
   isPlaying = false;
   starPool = null;
@@ -129,6 +135,9 @@ export default class Game extends cc.Component {
     this.score += 1;
     // 更新scoreDisplay Label文字
     this.scoreDisplay.string = "Score: " + this.score;
+
+    // 播放得分音效
+    cc.audioEngine.playEffect(this.scoreAudio, false);
   }
 
   // 游戏结束

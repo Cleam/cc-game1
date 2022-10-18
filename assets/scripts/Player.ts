@@ -31,6 +31,12 @@ export default class Player extends cc.Component {
   @property
   accel = 0;
 
+  @property({
+    type: cc.AudioClip,
+    displayName: "跳跃音效",
+  })
+  jumpAudio = null;
+
   // 加速度方向开关
   accLeft = false;
   accRight = false;
@@ -95,11 +101,22 @@ export default class Player extends cc.Component {
       .tween()
       .by(this.jumpDuration, { y: -this.jumpHeight }, { easing: "sineIn" });
 
-    //   创建一个缓动，按jumpUp jumpDown的顺序执行动作
-    const tween = cc.tween().sequence(jumpUp, jumpDown);
+    //   创建一个缓动
+    const tween = cc
+      .tween()
+      // 按 jumpUp，jumpDown 的顺序执行动作
+      .sequence(jumpUp, jumpDown)
+      // 添加一个回调函数，在前面的动作都结束时调用播放音效方法
+      // @ts-ignore
+      .call(this.playJumpSound, this);
 
     // 不断重复
     return cc.tween().repeatForever(tween);
+  }
+
+  playJumpSound() {
+    // 调用声音引擎播放声音
+    cc.audioEngine.playEffect(this.jumpAudio, false);
   }
 
   onKeyDown(e) {
